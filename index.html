@@ -396,7 +396,7 @@
 
       if (data.status === 'already_requested') {
         if (btn) { btn.textContent = '✓ Already Requested'; }
-        if (msg) msg.textContent = 'You've already requested this one.';
+        if (msg) msg.textContent = "You've already requested this one.";
         markRequested(gameData.igdb_id);
       } else if (data.status === 'ok') {
         markRequested(gameData.igdb_id);
