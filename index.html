@@ -299,18 +299,10 @@
 </div>
 
 <script>
-  // ============================================================
-  // CONFIGURATION — Replace these two values with your own
-  // ============================================================
-  const SUPABASE_URL = 'https://zrxzntiiuhozcmsbfygh.supabase.co/rest/v1/';
-  const SUPABASE_KEY = 'sb_publishable__BhxpD0FgdOFN5MRxuBvOA_7MJgYQsg';
-  // ============================================================
-
-  const sbHeaders = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json'
-  };
+  // Credentials are loaded securely from the server on startup
+  let SUPABASE_URL = '';
+  let SUPABASE_KEY = '';
+  let sbHeaders = {};
 
   // Track which games this browser session has already requested
   let requestedIds = new Set(JSON.parse(localStorage.getItem('grb_requested') || '[]'));
@@ -559,7 +551,26 @@
   }
 
   // ── Init ─────────────────────────────────────────────────────
-  loadLibrary();
+  // Fetch credentials from server, then load the game library
+  async function init() {
+    try {
+      const res = await fetch('/.netlify/functions/config');
+      const cfg = await res.json();
+      SUPABASE_URL = cfg.supabaseUrl;
+      SUPABASE_KEY = cfg.supabaseKey;
+      sbHeaders = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      };
+      loadLibrary();
+    } catch (err) {
+      setStatus('Could not connect. Please try refreshing the page.');
+      console.error(err);
+    }
+  }
+
+  init();
 </script>
 </body>
 </html>
